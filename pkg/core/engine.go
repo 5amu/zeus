@@ -52,6 +52,6 @@ func (e *Engine) RunOnConnection(con *connections.Connection) ([]*plugins.Plugin
 	return e.results, nil
 }
 
-func (e *Engine) GetNotification() chan Notification {
+func (e *Engine) GetNotification() <-chan Notification {
 	return e.notification
 }
