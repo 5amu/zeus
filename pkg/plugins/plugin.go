@@ -178,6 +178,7 @@ func NewPluginFromFile(fname string) (*Plugin, error) {
 // with the net result of the checks: (host) vulnerable or not
 type PluginResult struct {
 	IsVulnerable bool                     `json:"is_vulnerable"`
+	PluginID     string                   `json:"plugin_id"`
 	Outputs      []*connections.CMDResult `json:"outputs"`
 }
 
@@ -270,6 +271,7 @@ func (p *Plugin) RunTests(con *connections.Connection) (*PluginResult, error) {
 		if boolThis && stopAfterFirstTest {
 			return &PluginResult{
 				Outputs:      []*connections.CMDResult{res},
+				PluginID:     p.ID,
 				IsVulnerable: boolThis,
 			}, nil
 		}
@@ -278,6 +280,7 @@ func (p *Plugin) RunTests(con *connections.Connection) (*PluginResult, error) {
 	}
 	return &PluginResult{
 		Outputs:      outputs,
+		PluginID:     p.ID,
 		IsVulnerable: boolRes,
 	}, nil
 }
