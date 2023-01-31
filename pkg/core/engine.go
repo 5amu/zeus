@@ -14,16 +14,14 @@ type Notification struct {
 // Engine is configuration wrapper for the execution
 type Engine struct {
 	plugins      []*plugins.Plugin
-	threads      int
 	results      []*plugins.PluginResult
 	notification chan Notification
 	stop         chan struct{}
 }
 
-func NewEngineWithPlugins(plugins []*plugins.Plugin, threads int) *Engine {
+func NewEngineWithPlugins(plugins []*plugins.Plugin) *Engine {
 	return &Engine{
 		plugins:      plugins,
-		threads:      threads,
 		notification: make(chan Notification, len(plugins)),
 		stop:         make(chan struct{}, 1),
 	}
