@@ -75,6 +75,7 @@ type Plugin struct {
 // engine using the plugin
 type PluginTest struct {
 	Command string       `yaml:"command" json:"command"`
+	Comment string       `yaml:"comment,omitempty" json:"comment,omitempty"`
 	Parsers []TestParser `yaml:"parsers" json:"parsers"`
 }
 
@@ -100,8 +101,8 @@ var (
 	AllowedParserConditions = []string{"and", "or"}
 )
 
-// Validates the content of a plugin object. Returns nil if no error is found.
-func validate(p *Plugin) error {
+// Validate the content of a plugin object. Returns nil if no error is found.
+func Validate(p *Plugin) error {
 	if p.MatchCondition == "" {
 		// If no match condition is specified, put the default "and" condition
 		p.MatchCondition = AllowedMatchConditions[0]
@@ -158,10 +159,10 @@ func validate(p *Plugin) error {
 // error if the plugin is not valid.
 func NewPlugin(in []byte) (out *Plugin, err error) {
 	// Unmarshal the bytes into the struct
-	if err = yaml.Unmarshal(in, out); err != nil {
+	if err = yaml.Unmarshal(in, &out); err != nil {
 		return nil, err
 	}
-	return out, validate(out)
+	return out, Validate(out)
 }
 
 // NewPluginFromFile creates a new Plugin object, but will read the file and
