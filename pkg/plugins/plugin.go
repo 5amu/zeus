@@ -182,7 +182,7 @@ type PluginResult struct {
 	Outputs      []*connections.CMDResult `json:"outputs"`
 }
 
-func checkResult(res *connections.CMDResult, parsers []TestParser) (bool, error) {
+func checkResult(res *connections.CMDResult, parsers []TestParser, stopAfterFirstParser bool) (bool, error) {
 	// boolRes is the result of the parsers. If the length of the parsers
 	// slice is 0, then the result is automatically false, otherwise is
 	// initialized as true.
@@ -208,6 +208,7 @@ func checkResult(res *connections.CMDResult, parsers []TestParser) (bool, error)
 		}
 		text := builder.String()
 
+		var boolRule bool = true
 		for _, rule := range parser.Rules {
 			var boolThis bool
 			switch parser.RuleType {
@@ -227,10 +228,15 @@ func checkResult(res *connections.CMDResult, parsers []TestParser) (bool, error)
 				boolThis = strings.Contains(text, rule) != invert
 			}
 
-			boolRes = boolRes && boolThis
-			if boolThis && stopAfterFirstRule {
-				return true, nil
+			boolRule = boolRule && boolThis
+			if boolRule && stopAfterFirstRule {
+				break
 			}
+		}
+
+		boolRes = boolRes && boolRule
+		if boolRes && stopAfterFirstParser {
+			return true, nil
 		}
 	}
 	return boolRes, nil
@@ -261,7 +267,7 @@ func (p *Plugin) RunTests(con *connections.Connection) (*PluginResult, error) {
 		outputs = append(outputs, res)
 
 		// register the current boolean result
-		boolThis, err := checkResult(res, test.Parsers)
+		boolThis, err := checkResult(res, test.Parsers, p.MatchCondition == "or")
 		if err != nil {
 			return nil, err
 		}
