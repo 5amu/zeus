@@ -1,0 +1,47 @@
+project_name: zeus
+
+before:
+  hooks:
+  - go mod download
+
+builds:
+  -
+    main: ./cmd/zeus/
+    binary: zeus
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+    flags:
+      - -trimpath
+    tags:
+      - static_build
+    ldflags:
+      - -linkmode external
+      - -extldflags "-static-pie"
+      - -s
+      - -w
+
+archives:
+  -
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    replacements:
+      darwin: macos
+    wrap_in_directory: true
+
+checksum:
+  name_template: "{{ .ProjectName }}_checksums.txt"
+
+changelog:
+  sort: desc
+  filters:
+    exclude:
+    - '^MERGE'
+    - "{{ .Tag }}"
+
+release:
+  github:
+    owner: 5amu
+    name: zeus
