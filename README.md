@@ -1,6 +1,8 @@
 <h1 align="center"><img width="300px" src="assets/cover.png" alt="Zeus"></h1>
 <h4 align="center">fast and reliable local vulnerability scanner</h4>
 
+[![🔥 release](https://github.com/5amu/zeus/actions/workflows/release.yaml/badge.svg)](https://github.com/5amu/zeus/actions/workflows/release.yaml)
+
 ---
 
 Zeus is used to assess the security of an Operating System using a remote connection. This is achieved by sending commands and checking matching specific rules to the output based on a plugin system.
