@@ -29,7 +29,7 @@ func parseCLI() (*arguments, error) {
 	var args arguments
 
 	flagSet := goflags.NewFlagSet()
-	flagSet.SetDescription(`Last and reliable local vulnerability scanner over remote connection`)
+	flagSet.SetDescription(`Fast and reliable local vulnerability scanner over remote connection`)
 
 	flagSet.CreateGroup("input", "Target",
 		flagSet.StringVarP(&args.target, "target", "u", "", "target host to scan"),
