@@ -12,7 +12,7 @@ import (
 	"github.com/projectdiscovery/gologger/levels"
 )
 
-const Version = "0.1"
+const Version = "0.3"
 
 type arguments struct {
 	version        bool
