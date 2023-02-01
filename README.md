@@ -2,6 +2,7 @@
 <h4 align="center">fast and reliable local vulnerability scanner</h4>
 
 [![🔥 release](https://github.com/5amu/zeus/actions/workflows/release.yaml/badge.svg)](https://github.com/5amu/zeus/actions/workflows/release.yaml)
+[![⚙️ tests](https://github.com/5amu/zeus/actions/workflows/tests.yaml/badge.svg)](https://github.com/5amu/zeus/actions/workflows/tests.yaml)
 
 ---
 
