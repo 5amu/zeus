@@ -115,17 +115,16 @@ func Validate(p *Plugin) error {
 	}
 
 	// Check all tests of a plugin
-	for _, test := range p.Tests {
+	for indexTest := range p.Tests {
 		// Check all parsers for a test
-		for _, parser := range test.Parsers {
+		for indexParser := range p.Tests[indexTest].Parsers {
 			// Check the part key
-			if parser.Parts == nil {
+			if p.Tests[indexTest].Parsers[indexParser].Parts == nil {
 				// If no part is specified, select all
-				parser.Parts = make([]string, len(AllowedParts))
-				copy(parser.Parts, AllowedParts)
+				p.Tests[indexTest].Parsers[indexParser].Parts = AllowedParts
 			} else {
 				// Otherwise, check if the parts are allowed
-				for _, part := range parser.Parts {
+				for _, part := range p.Tests[indexTest].Parsers[indexParser].Parts {
 					index := sort.SearchStrings(AllowedParts, part)
 					if index == len(AllowedParts) || AllowedParts[index] != part {
 						return fmt.Errorf("id: %v, %v is not an allowed part", p.ID, part)
@@ -134,20 +133,20 @@ func Validate(p *Plugin) error {
 			}
 
 			// Check the rule key
-			index := sort.SearchStrings(AllowedRuleTypes, parser.RuleType)
-			if index == len(AllowedRuleTypes) || AllowedRuleTypes[index] != parser.RuleType {
-				return fmt.Errorf("id: %v, %v is not a valid rule type", p.ID, parser.RuleType)
+			index := sort.SearchStrings(AllowedRuleTypes, p.Tests[indexTest].Parsers[indexParser].RuleType)
+			if index == len(AllowedRuleTypes) || AllowedRuleTypes[index] != p.Tests[indexTest].Parsers[indexParser].RuleType {
+				return fmt.Errorf("id: %v, %v is not a valid rule type", p.ID, p.Tests[indexTest].Parsers[indexParser].RuleType)
 			}
 
 			// Check the condition key
-			if parser.Condition == "" {
+			if p.Tests[indexTest].Parsers[indexParser].Condition == "" {
 				// If no condition is specified, choose the first
-				parser.Condition = AllowedParserConditions[0]
+				p.Tests[indexTest].Parsers[indexParser].Condition = AllowedParserConditions[0]
 			} else {
 				// Otherwise, check if the condition is allowed
-				index := sort.SearchStrings(AllowedParserConditions, parser.Condition)
-				if index == len(AllowedParserConditions) || AllowedParserConditions[index] != parser.Condition {
-					return fmt.Errorf("id: %v, %v is not a valid condition", p.ID, parser.Condition)
+				index := sort.SearchStrings(AllowedParserConditions, p.Tests[indexTest].Parsers[indexParser].Condition)
+				if index == len(AllowedParserConditions) || AllowedParserConditions[index] != p.Tests[indexTest].Parsers[indexParser].Condition {
+					return fmt.Errorf("id: %v, %v is not a valid condition", p.ID, p.Tests[indexTest].Parsers[indexParser].Condition)
 				}
 			}
 		}
