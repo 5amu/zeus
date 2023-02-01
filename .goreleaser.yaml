@@ -5,31 +5,30 @@ before:
   - go mod download
 
 builds:
-  -
-    main: ./cmd/zeus/
+  - main: ./cmd/zeus/
     binary: zeus
-    goos:
-      - linux
-      - windows
-      - darwin
-    goarch:
-      - amd64
+    goos: [windows, linux,darwin]
+    goarch: [amd64, '386', arm, arm64]
+    ignore:
+      - goos: darwin
+        goarch: '386'
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: arm64
     flags:
       - -trimpath
-    tags:
-      - static_build
-    ldflags:
-      - -linkmode external
-      - -extldflags "-static-pie"
-      - -s
-      - -w
+    env:
+    - CGO_ENABLED=0
 
 archives:
   -
-    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
-    replacements:
-      darwin: macos
-    wrap_in_directory: true
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- if eq .Os "darwin" }}macos_
+      {{- else }}{{ .Os }}{{- end }}
+      {{- .Arch }}"
+    wrap_in_directory: false
 
 checksum:
   name_template: "{{ .ProjectName }}_checksums.txt"
