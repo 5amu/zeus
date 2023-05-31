@@ -8,6 +8,8 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+const MaxSSHParallelSessions = 5
+
 // SSHConnection implements Connection, and uses the SSH protocol, the "exec"
 // directive of the protocol to be precise. So many tty programs won't work
 //
@@ -18,6 +20,7 @@ type SSHConnection struct {
 	Host             string            `json:"target"`
 	ConnectionString *ConnectionString `json:"connection_string"`
 	SSHClient        *ssh.Client
+	SessionsCounter  int
 }
 
 func (s *SSHConnection) Connect(cs *ConnectionString) error {
@@ -41,6 +44,7 @@ func (s *SSHConnection) Connect(cs *ConnectionString) error {
 		}
 	}
 	s.SSHClient = client
+	s.SessionsCounter = MaxSSHParallelSessions
 	return nil
 }
 
@@ -48,6 +52,18 @@ func (s *SSHConnection) Run(cmd string) (*CMDResult, error) {
 	// Initialize CMDResult for output
 	result := &CMDResult{
 		Stdin: cmd,
+	}
+
+	// Check wether to reconnect to target. On some systems too many ssh
+	// authentications will lock the user out. Better be conservative and limit
+	// this kind of behavior. I set 5 consecutive authentications on the same
+	// channel, afterwards the client will reconnect to the target.
+	s.SessionsCounter = s.SessionsCounter - 1
+	if s.SessionsCounter < 1 {
+		s.SSHClient.Close()
+		if err := s.Connect(s.ConnectionString); err != nil {
+			return result, err
+		}
 	}
 
 	// Enstablish an SSH session in which we can run commands without
